@@ -1,0 +1,13 @@
+.DS_STORE
+
+*.swp
+
+speed_data
+
+README
+
+train.nosync
+
+validate.nosync
+
+opFlow.nosync
