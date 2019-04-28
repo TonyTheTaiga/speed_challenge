@@ -11,30 +11,25 @@ def adjustGamma(image, gamma=1.0):
 def main():
     cap = cv2.VideoCapture('speed_data/train.mp4')
 
-    ret, init = cap.read()
-    init_gray = cv2.cvtColor(init,cv2.COLOR_BGR2GRAY)
-    hsv = np.zeros_like(init)
+    ret, base_frame = cap.read()
+    base_gray = cv2.cvtColor(base_frame, cv2.COLOR_BGR2GRAY)
+    hsv = np.zeros_like(init) 
     hsv[...,1] = 255
 
     tl = open('speed_data/train.txt', 'r')
-
-    # while(True):
-    #     cv2.imshow('HSV', cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR))
-
-    #     if cv2.waitKey(1) == ord('q'):
-    #         break
+    
     i = 1
     while(1):
-        ret, frame2 = cap.read()
+        ret, next_frame = cap.read()
 
         if not ret:
             print('end of video')
             break
 
-        next = cv2.cvtColor(adjustGamma(frame2, 1.5),cv2.COLOR_BGR2GRAY)
+        next_gray = cv2.cvtColor(adjustGamma(next_frame, 1.25),cv2.COLOR_BGR2GRAY)
 
-        flow = cv2.calcOpticalFlowFarneback(init_gray,
-            next, flow=None, pyr_scale=0.5,
+        flow = cv2.calcOpticalFlowFarneback(base_gray,
+            next_gray, flow=None, pyr_scale=0.5,
             levels=3, winsize=15, iterations=3,
             poly_n=5, poly_sigma=1.2, flags=0)
 
@@ -48,23 +43,26 @@ def main():
 
         rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
-        cv2.imshow('frame2', next[50:360])
+        cv2.imshow('next_frame', next_gray[50:360])
         cv2.imshow('opticalflow',rgb[50:360])
-        cv2.moveWindow('frame2', 0, 0)
+        cv2.moveWindow('next_frame', 0, 0)
         cv2.moveWindow('opticalflow', 0, 400)
         #cv2.imwrite(f'opFlow.nosync/opflow_{i}.png', rgb[50:360])
 
         
 
-        k = cv2.waitKey(100) & 0xff
-        if k == 27:
+        key = cv2.waitKey(100) & 0xff
+        if key == 27:
             break
-        elif k == ord('s'):
-            cv2.imwrite('opticalfb.png',frame2)
+        elif key == ord('s'):
+            cv2.imwrite('opticalfb.png',next_frame
+)
             cv2.imwrite('opticalhsv.png',rgb)
-        elif k == ord('q'):
+        elif key == ord('q'):
             break
-        init_gray = next
+
+        base_gray = next_gray
+
         i += 1
         
     cv2.destroyAllWindows()
