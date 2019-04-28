@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import cv2
 import numpy as np
+import random
 
 def adjustGamma(image, gamma=1.0):
     invGamma = 1.0 / gamma
@@ -13,28 +14,31 @@ def main():
 
     ret, base_frame = cap.read()
     base_gray = cv2.cvtColor(base_frame, cv2.COLOR_BGR2GRAY)
-    hsv = np.zeros_like(init) 
+    hsv = np.zeros_like(base_frame) 
     hsv[...,1] = 255
 
     tl = open('speed_data/train.txt', 'r')
-    
     i = 1
-    while(1):
+    
+    wk = 5
+
+    while cap.isOpened():
         ret, next_frame = cap.read()
 
         if not ret:
             print('end of video')
             break
 
-        next_gray = cv2.cvtColor(adjustGamma(next_frame, 1.25),cv2.COLOR_BGR2GRAY)
+        gammaVal = random.uniform(1.0, 1.5)
+
+        next_gray = cv2.cvtColor(adjustGamma(next_frame, gammaVal),cv2.COLOR_BGR2GRAY)
 
         flow = cv2.calcOpticalFlowFarneback(base_gray,
             next_gray, flow=None, pyr_scale=0.5,
             levels=3, winsize=15, iterations=3,
             poly_n=5, poly_sigma=1.2, flags=0)
 
-        print(tl.readline())
-        # break
+        print(f'frame:{i}\n{tl.readline()}\nGamma Val:{gammaVal}')
 
         mag, ang = cv2.cartToPolar(flow[...,0], flow[...,1])
 
@@ -43,27 +47,30 @@ def main():
 
         rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
-        cv2.imshow('next_frame', next_gray[50:360])
+        cv2.imshow(f'current frame', next_gray[50:360])
         cv2.imshow('opticalflow',rgb[50:360])
-        cv2.moveWindow('next_frame', 0, 0)
+        cv2.moveWindow('current frame', 0, 0)
         cv2.moveWindow('opticalflow', 0, 400)
         #cv2.imwrite(f'opFlow.nosync/opflow_{i}.png', rgb[50:360])
 
-        
+        base_gray = next_gray
+        i += 1
 
-        key = cv2.waitKey(100) & 0xff
+        key = cv2.waitKey(wk) & 0xff
         if key == 27:
             break
         elif key == ord('s'):
-            cv2.imwrite('opticalfb.png',next_frame
-)
+            cv2.imwrite('opticalfb.png',next_frame)
             cv2.imwrite('opticalhsv.png',rgb)
         elif key == ord('q'):
             break
-
-        base_gray = next_gray
-
-        i += 1
+        elif key == ord('p'):
+            #pauses the video when p is pressed           
+            if wk == 5:
+                wk = 0
+            else:
+                wk = 5
+            
         
     cv2.destroyAllWindows()
     cap.release()
