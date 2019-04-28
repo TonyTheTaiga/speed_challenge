@@ -38,12 +38,12 @@ def main():
             levels=3, winsize=15, iterations=3,
             poly_n=5, poly_sigma=1.2, flags=0)
 
-        print(f'frame:{i}\n{tl.readline()}\nGamma Val:{gammaVal}')
+        print(f'frame:{i}\nlabel:{tl.readline().strip()}\nGamma Val:{gammaVal}\n')
 
         mag, ang = cv2.cartToPolar(flow[...,0], flow[...,1])
 
         hsv[...,0] = ang*180/np.pi/2
-        hsv[...,2] = cv2.normalize(mag,None,0,255,cv2.NORM_MINMAX)
+        hsv[...,2] = cv2.normalize(src=mag, dst=None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX)
 
         rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
