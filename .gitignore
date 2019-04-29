@@ -11,3 +11,5 @@ train.nosync
 validate.nosync
 
 opFlow.nosync
+
+__pycache__/*
