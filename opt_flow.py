@@ -16,8 +16,6 @@ from __future__ import print_function
 import numpy as np
 import cv2 as cv
 
-# import video
-
 
 def draw_flow(img, flow, step=16):
     h, w = img.shape[:2]
@@ -76,10 +74,10 @@ def main():
 
         black = np.zeros_like(gray)
 
-        # cv.imshow('video', gray)
-        # cv.imshow('flow', draw_flow(black, flow))
+        cv.imshow('video', gray)
+        cv.imshow('flow', draw_flow(black, flow))
 
-        cv.imwrite(f'train.nosync/flow_{fcount}.png', draw_flow(black, flow))
+        # cv.imwrite(f'train.nosync/flow_{fcount}.png', draw_flow(black, flow))
 
         print(fcount)
 
@@ -92,17 +90,17 @@ def main():
 
         fcount += 1
 
-        # ch = cv.waitKey(5)
-        # if ch == 27:
-        #     break
-        # if ch == ord('1'):
-        #     show_hsv = not show_hsv
-        #     print('HSV flow visualization is', ['off', 'on'][show_hsv])
-        # if ch == ord('2'):
-        #     show_glitch = not show_glitch
-        #     if show_glitch:
-        #         cur_glitch = img.copy()
-        #     print('glitch is', ['off', 'on'][show_glitch])
+        ch = cv.waitKey(5)
+        if ch == 27:
+            break
+        if ch == ord('1'):
+            show_hsv = not show_hsv
+            print('HSV flow visualization is', ['off', 'on'][show_hsv])
+        if ch == ord('2'):
+            show_glitch = not show_glitch
+            if show_glitch:
+                cur_glitch = img.copy()
+            print('glitch is', ['off', 'on'][show_glitch])
 
 
 if __name__ == '__main__':
