@@ -61,7 +61,14 @@ def main():
 
     fcount = 1
 
+    index = 0
+
+    features = np.ndarray(shape=(20399,310,640,3), dtype=float)
+    labels = np.ndarray(shape=(20399,1), dtype=float)
+
     while True:
+        
+   
         ret, img = cam.read()
 
         if not ret:
@@ -73,34 +80,39 @@ def main():
         prevgray = gray
 
         black = np.zeros_like(gray)
+        flow2 = draw_flow(black, flow)[50:360]
 
-        cv.imshow('video', gray)
-        cv.imshow('flow', draw_flow(black, flow))
-
+        # cv.imshow('video', gray[50:360])
+        # cv.imshow('flow', flow2)
         # cv.imwrite(f'train.nosync/flow_{fcount}.png', draw_flow(black, flow))
 
         print(fcount)
 
-
-        if show_hsv:
-            cv.imshow('flow HSV', draw_hsv(flow))
-        if show_glitch:
-            cur_glitch = warp_flow(cur_glitch, flow)
-            cv.imshow('glitch', cur_glitch)
+        features[index,...] = flow2
+        print(features[index,...][234][398])
+        print(flow2[234][398])
 
         fcount += 1
+        index += 1
 
-        ch = cv.waitKey(5)
-        if ch == 27:
-            break
-        if ch == ord('1'):
-            show_hsv = not show_hsv
-            print('HSV flow visualization is', ['off', 'on'][show_hsv])
-        if ch == ord('2'):
-            show_glitch = not show_glitch
-            if show_glitch:
-                cur_glitch = img.copy()
-            print('glitch is', ['off', 'on'][show_glitch])
+
+        # if show_hsv:
+        #     cv.imshow('flow HSV', draw_hsv(flow))
+        # if show_glitch:
+        #     cur_glitch = warp_flow(cur_glitch, flow)
+        #     cv.imshow('glitch', cur_glitch)
+
+        # ch = cv.waitKey(5)
+        # if ch == 27:
+        #     break
+        # if ch == ord('1'):
+        #     show_hsv = not show_hsv
+        #     print('HSV flow visualization is', ['off', 'on'][show_hsv])
+        # if ch == ord('2'):
+        #     show_glitch = not show_glitch
+        #     if show_glitch:
+        #         cur_glitch = img.copy()
+        #     print('glitch is', ['off', 'on'][show_glitch])
 
 
 if __name__ == '__main__':
