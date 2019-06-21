@@ -15,7 +15,7 @@ from __future__ import print_function
 
 import numpy as np
 import cv2 as cv
-
+import tensorflow as tf
 
 def draw_flow(img, flow, step=16):
     h, w = img.shape[:2]
@@ -28,7 +28,6 @@ def draw_flow(img, flow, step=16):
     for (x1, y1), (_x2, _y2) in lines:
         cv.circle(vis, (x1, y1), 1, (0, 255, 0), -1)
     return vis
-
 
 def draw_hsv(flow):
     h, w = flow.shape[:2]
@@ -67,16 +66,17 @@ def main():
     labels = np.ndarray(shape=(20399,1), dtype=float)
 
     while True:
-        
-   
+    
         ret, img = cam.read()
 
         if not ret:
             print('end of video')
             break
 
+        # Turn image gray then apply optical algorithm
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         flow = cv.calcOpticalFlowFarneback(prevgray, gray, None, 0.5, 3, 15, 3, 5, 1.2, 0)
+        
         prevgray = gray
 
         black = np.zeros_like(gray)
@@ -89,12 +89,11 @@ def main():
         print(fcount)
 
         features[index,...] = flow2
-        print(features[index,...][234][398])
-        print(flow2[234][398])
+        # print(features[index,...][234][398])
+        # print(flow2[234][398])
 
         fcount += 1
         index += 1
-
 
         # if show_hsv:
         #     cv.imshow('flow HSV', draw_hsv(flow))
@@ -114,6 +113,9 @@ def main():
         #         cur_glitch = img.copy()
         #     print('glitch is', ['off', 'on'][show_glitch])
 
+
+
+    dataset = tf.data.Dataset.from_tensor_slices(features)
 
 if __name__ == '__main__':
     print(__doc__)
