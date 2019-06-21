@@ -15,7 +15,7 @@ from __future__ import print_function
 
 import numpy as np
 import cv2 as cv
-import tensorflow as tf
+# import tensorflow as tf
 
 def draw_flow(img, flow, step=16):
     h, w = img.shape[:2]
@@ -82,40 +82,40 @@ def main():
         black = np.zeros_like(gray)
         flow2 = draw_flow(black, flow)[50:360]
 
-        # cv.imshow('video', gray[50:360])
-        # cv.imshow('flow', flow2)
+        cv.imshow('video', gray[50:360])
+        cv.imshow('flow', flow2)
         # cv.imwrite(f'train.nosync/flow_{fcount}.png', draw_flow(black, flow))
 
-        print(fcount)
+        # print(fcount)
 
-        features[index,...] = flow2
+        # features[index,...] = flow2
         # print(features[index,...][234][398])
         # print(flow2[234][398])
 
-        fcount += 1
-        index += 1
+        # fcount += 1
+        # index += 1
 
-        # if show_hsv:
-        #     cv.imshow('flow HSV', draw_hsv(flow))
-        # if show_glitch:
-        #     cur_glitch = warp_flow(cur_glitch, flow)
-        #     cv.imshow('glitch', cur_glitch)
+        if show_hsv:
+            cv.imshow('flow HSV', draw_hsv(flow))
+        if show_glitch:
+            cur_glitch = warp_flow(cur_glitch, flow)
+            cv.imshow('glitch', cur_glitch)
 
-        # ch = cv.waitKey(5)
-        # if ch == 27:
-        #     break
-        # if ch == ord('1'):
-        #     show_hsv = not show_hsv
-        #     print('HSV flow visualization is', ['off', 'on'][show_hsv])
-        # if ch == ord('2'):
-        #     show_glitch = not show_glitch
-        #     if show_glitch:
-        #         cur_glitch = img.copy()
-        #     print('glitch is', ['off', 'on'][show_glitch])
+        ch = cv.waitKey(5)
+        if ch == 27:
+            break
+        if ch == ord('1'):
+            show_hsv = not show_hsv
+            print('HSV flow visualization is', ['off', 'on'][show_hsv])
+        if ch == ord('2'):
+            show_glitch = not show_glitch
+            if show_glitch:
+                cur_glitch = img.copy()
+            print('glitch is', ['off', 'on'][show_glitch])
 
 
 
-    dataset = tf.data.Dataset.from_tensor_slices(features)
+    # dataset = tf.data.Dataset.from_tensor_slices(features)
 
 if __name__ == '__main__':
     print(__doc__)
